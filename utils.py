@@ -6,14 +6,16 @@ from transformers import (
 from dotenv import load_dotenv
 import os 
 
-load_dotenv()
+def hf_login():
+    load_dotenv()
 
-# Login to Hugging Face Hub
-token = os.environ['HF_TOKEN']
-login(token=token)
+    # Login to Hugging Face Hub
+    token = os.environ['HF_TOKEN']
+    login(token=token)
 
 # Function to generate a summary using BART
 def generate_summary_bart(text):
+    hf_login()
     try:
         # Load model and tokenizer
         model = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")
@@ -36,6 +38,7 @@ def generate_summary_bart(text):
 
 # Function to generate a summary using Pegasus
 def generate_summary_pegasus(text):
+    hf_login()
     try:
         # Load tokenizer and model
         tokenizer = AutoTokenizer.from_pretrained("google/pegasus-cnn_dailymail", token=True)
