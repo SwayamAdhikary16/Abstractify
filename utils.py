@@ -25,6 +25,7 @@ def generate_summary_bart(text):
         
         # Decode summary
         summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        summary = summary.replace("<pad>","").replace("<n>","").replace("</s>","").strip()
     except Exception as e:
         print(f"BART Error: {e}")
         return None
@@ -37,15 +38,16 @@ def generate_summary_bart(text):
 def generate_summary_pegasus(text):
     try:
         # Load tokenizer and model
-        tokenizer = AutoTokenizer.from_pretrained("tuner007/pegasus_paraphrase", token=True)
-        model = AutoModelForSeq2SeqLM.from_pretrained("tuner007/pegasus_paraphrase", token=True)
-        
+        tokenizer = AutoTokenizer.from_pretrained("google/pegasus-cnn_dailymail", token=True)
+        model = AutoModelForSeq2SeqLM.from_pretrained("google/pegasus-cnn_dailymail", token=True)
+        #tuner007/pegasus_paraphrase
         # Tokenize input text
         tokens = tokenizer(text, truncation=True, padding="longest", return_tensors="pt")
         outputs = model.generate(**tokens)
         
         # Decode summary
         summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        summary = summary.replace("<pad>","").replace("<n>","").replace("</s>","").strip()
     except Exception as e:
         print(f"Pegasus Error: {e}")
         return None
