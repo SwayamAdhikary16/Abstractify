@@ -4,7 +4,8 @@ from transformers import (
     AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 )
 from dotenv import load_dotenv
-import os 
+import os
+import PyPDF2
 
 def hf_login():
     load_dotenv()
@@ -58,3 +59,19 @@ def generate_summary_pegasus(text):
     #     # Ensure cleanup
     #     del model, tokenizer
     return summary
+
+# Function to extract text from a PDF
+def extract_text_from_pdf(pdf_path):
+    try:
+        pdf_text = ""
+        # Open the PDF file in read-binary mode
+        with open(pdf_path, "rb") as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            # Iterate through each page and extract text
+            for page in pdf_reader.pages:
+                pdf_text += page.extract_text()
+        return pdf_text  # Return the extracted text
+    except Exception as e:
+        # Print any errors that occur during the process
+        print(f"PDF Error: {e}")
+        return None
