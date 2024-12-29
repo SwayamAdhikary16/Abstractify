@@ -42,8 +42,8 @@ def generate_summary_pegasus(text):
     hf_login()
     try:
         # Load tokenizer and model
-        tokenizer = AutoTokenizer.from_pretrained("google/pegasus-cnn_dailymail", token=True)
-        model = AutoModelForSeq2SeqLM.from_pretrained("google/pegasus-cnn_dailymail", token=True)
+        tokenizer = AutoTokenizer.from_pretrained("google/bigbird-pegasus-large-pubmed", token=True)
+        model = AutoModelForSeq2SeqLM.from_pretrained("google/bigbird-pegasus-large-pubmed", token=True)
         #tuner007/pegasus_paraphrase
         # Tokenize input text
         tokens = tokenizer(text, truncation=True, padding="longest", return_tensors="pt")
