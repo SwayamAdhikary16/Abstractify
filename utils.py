@@ -6,13 +6,21 @@ from transformers import (
 from dotenv import load_dotenv
 import os
 import PyPDF2
+import google.generativeai as genai 
+
+load_dotenv()
 
 def hf_login():
     load_dotenv()
-
     # Login to Hugging Face Hub
     token = os.environ['HF_TOKEN']
     login(token=token)
+
+def gem_login():
+
+    # Login to Generative AI
+    api = os.environ["GEM_API"]
+    genai.configure(api_key=api)
 
 # Function to generate a summary using BART
 def generate_summary_bart(text):
@@ -88,3 +96,25 @@ def extract_text_from_pdf(pdf_path):
         # Print any errors that occur during the process
         print(f"PDF Error: {e}")
         return None
+
+# Function to chat with data
+def question_answering(text,question):
+    gem_login()
+    pre_prompt = f"""
+                    You are an AI restricted to answering questions strictly based on the provided context. Do not provide any information, assumptions, or responses that are not explicitly stated in the given text. 
+
+                    Context: 
+                    {text}
+
+                    For each question, if the information is not present in the text, respond with: 'The text does not provide this information.'
+                    So now provide the complete answer to the question.
+                    Question: {question}
+                    Answer:
+                    """
+    try:
+        model = genai.GenerativeModel(model_name='gemini-1.5-pro-latest')
+        response = model.generate_content(pre_prompt)
+        answer = response.text
+        return answer
+    except Exception as e:
+        return str(e)
