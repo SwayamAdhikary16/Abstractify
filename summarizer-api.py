@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from utils import generate_summary_bart, generate_summary_pegasus, extract_text_from_pdf
+from utils import generate_summary_bart, generate_summary_pegasus, extract_text_from_pdf, question_answering
 import PyPDF2
 import os 
 import tempfile
@@ -102,6 +102,21 @@ def get_from_pdf_url():
             return jsonify({"text": text})
         else:
             return jsonify({"error": "No 'pdf_url' provided in request body."}), 400
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+@app.route('/question_answering', methods=['POST'])
+def answer():
+    try:
+        data = request.json
+        if not data or 'text' not in data or 'question' not in data:
+            return jsonify({"error": "Missing 'text' or 'question' in request body."}), 400
+
+        text = data['text']
+        question = data['question']
+        answer = question_answering(text, question)
+
+        return jsonify({"answer": answer})
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
