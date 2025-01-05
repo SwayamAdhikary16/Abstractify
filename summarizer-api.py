@@ -113,7 +113,6 @@ def get_from_pdf_url():
 @app.route('/question_answering', methods=['POST'])
 def answer():
     global global_text
-    print("Text in variable: ", global_text)
     try:
         if not global_text:
             return jsonify({"error": "No text available. Please summarize or extract text first."}), 400
