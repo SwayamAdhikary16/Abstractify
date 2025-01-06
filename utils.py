@@ -2,7 +2,8 @@
 from huggingface_hub import login
 from transformers import (
     BartTokenizer, BartForConditionalGeneration,
-    AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
+    AutoTokenizer, AutoModelForSeq2SeqLM, pipeline,
+    PegasusTokenizer, PegasusForConditionalGeneration
 )
 from dotenv import load_dotenv
 import os
@@ -99,8 +100,8 @@ def generate_summary_pegasus(text):
     """
     try:
         # Load Pegasus model and tokenizer
-        tokenizer = AutoTokenizer.from_pretrained("google/bigbird-pegasus-large-pubmed")
-        model = AutoModelForSeq2SeqLM.from_pretrained("google/bigbird-pegasus-large-pubmed")
+        tokenizer = PegasusTokenizer.from_pretrained("google/pegasus-cnn_dailymail")
+        model = PegasusForConditionalGeneration.from_pretrained("google/pegasus-cnn_dailymail")
         
         # Tokenize input text
         tokens = tokenizer(text, truncation=True, padding="longest", return_tensors="pt")
@@ -171,4 +172,3 @@ def question_answering(text, question):
         return answer
     except Exception as e:
         return str(e)
-
