@@ -55,8 +55,9 @@ def generate_summary_bart(text):
     hf_login()  # Ensure Hugging Face login
     try:
         # Load BART model and tokenizer
-        model = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")
-        tokenizer = BartTokenizer.from_pretrained("facebook/bart-large-cnn")
+        bart_model = os.environ["BART_MODEL"]
+        model = BartForConditionalGeneration.from_pretrained(bart_model)
+        tokenizer = BartTokenizer.from_pretrained(bart_model)
         
         # Tokenize input text
         tokens = tokenizer(text, truncation=True, padding="longest", return_tensors="pt", max_length=1024)
@@ -100,8 +101,9 @@ def generate_summary_pegasus(text):
     """
     try:
         # Load Pegasus model and tokenizer
-        tokenizer = PegasusTokenizer.from_pretrained("google/pegasus-cnn_dailymail")
-        model = PegasusForConditionalGeneration.from_pretrained("google/pegasus-cnn_dailymail")
+        pegasus_model = os.environ["PEGASUS_MODEL"]
+        tokenizer = PegasusTokenizer.from_pretrained(pegasus_model)
+        model = PegasusForConditionalGeneration.from_pretrained(pegasus_model)
         
         # Tokenize input text
         tokens = tokenizer(text, truncation=True, padding="longest", return_tensors="pt")
@@ -165,8 +167,8 @@ def question_answering(text, question):
                     Answer:
                     """
     try:
-        # Use Generative AI to generate a response
-        model = genai.GenerativeModel(model_name='gemini-1.5-pro-latest')
+        qa_model = os.environ["QA_MODEL"]
+        model = genai.GenerativeModel(qa_model)
         response = model.generate_content(pre_prompt)
         answer = response.text
         return answer
