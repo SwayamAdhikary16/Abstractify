@@ -104,12 +104,31 @@ def generate_summary_pegasus(text):
         pegasus_model = os.environ["PEGASUS_MODEL"]
         tokenizer = PegasusTokenizer.from_pretrained(pegasus_model)
         model = PegasusForConditionalGeneration.from_pretrained(pegasus_model)
+
+        # Construct prompt for abstractive summarization
+        prompt_text = (
+            "Please write an *abstractive* summary of the following text in about 300 words. "
+            "Focus on the main ideas, rephrase creatively, and do not copy sentences verbatim:\n\n"
+            + text
+        )
         
         # Tokenize input text
-        tokens = tokenizer(text, truncation=True, padding="longest", return_tensors="pt")
+        tokens = tokenizer(prompt_text, truncation=True, padding="longest", return_tensors="pt")
+        
+        # Generation parameters for Pegasus
+        generation_params = {
+            "min_length": 220,               # Encourage a minimum length (approx. 220 tokens)
+            "max_length": 500,               # Allow enough room for ~300 tokens if needed
+            "num_beams": 5,                  # Beam search; increase for more thorough search
+            "no_repeat_ngram_size": 3,       # Avoid repeating phrases
+            "length_penalty": 2.0,           # Pushes the model to generate longer text
+            "do_sample": True,               # Activate sampling
+            "top_p": 0.9,                    # Nucleus sampling for more creativity
+            "temperature": 1.1               # Increase temperature for added variability
+        }
         
         # Generate summary
-        outputs = model.generate(**tokens)
+        outputs = model.generate(**tokens, **generation_params)
         
         # Decode summary into a readable string
         summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
